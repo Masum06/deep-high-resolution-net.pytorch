@@ -259,6 +259,7 @@ class HighResolutionModule(nn.Module):
                 if i == j:
                     y = y + x[j]
                 else:
+                    print("==============>", y.shape, x[j].shape)
                     y = y + self.fuse_layers[i][j](x[j])
             x_fuse.append(self.relu(y))
 
