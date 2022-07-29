@@ -23,7 +23,7 @@ DATASET:
   TEST_SET: 'valid'
   TRAIN_SET: 'train'
 MODEL:
-  INIT_WEIGHTS: true
+  INIT_WEIGHTS: false
   NAME: pose_hrnet
   NUM_JOINTS: 21
   PRETRAINED: 'models/pytorch/imagenet/hrnet_w48-8ef0771d.pth'
