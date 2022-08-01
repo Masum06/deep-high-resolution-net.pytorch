@@ -29,8 +29,8 @@ MODEL:
   PRETRAINED: 'models/pytorch/imagenet/hrnet_w48-8ef0771d.pth'
   TARGET_TYPE: gaussian
   IMAGE_SIZE:
-  - 576
   - 720
+  - 576
   HEATMAP_SIZE:
   - 72
   - 96
