@@ -231,11 +231,11 @@ class COCODataset(JointsDataset):
 
     def image_path_from_index(self, index):
         """ example: images / train2017 / 000000119993.jpg """
-        file_name = '%012d.jpg' % index
+        file_name = '%012d.png' % index
         if '2014' in self.image_set:
             file_name = 'COCO_%s_' % self.image_set + file_name
 
-        prefix = 'test2017' if 'test' in self.image_set else self.image_set
+        prefix = 'test' if 'test' in self.image_set else self.image_set
 
         data_name = prefix + '.zip@' if self.data_format == 'zip' else prefix
 
