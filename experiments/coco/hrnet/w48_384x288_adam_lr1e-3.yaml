@@ -17,7 +17,7 @@ DATASET:
   FLIP: true
   NUM_JOINTS_HALF_BODY: 8
   PROB_HALF_BODY: 0.3
-  ROOT: ''
+  ROOT: '/gdrive/MyDrive/Hi5/HI5/data/coco/'
   ROT_FACTOR: 45
   SCALE_FACTOR: 0.35
   TEST_SET: 'valid'
