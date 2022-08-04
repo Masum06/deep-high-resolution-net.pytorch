@@ -131,6 +131,8 @@ def main():
             normalize,
         ])
     )
+    # print("================>>>",cfg.DATASET.TEST_SET, len(train_dataset))
+
     valid_dataset = eval('dataset.'+cfg.DATASET.DATASET)(
         cfg, cfg.DATASET.ROOT, cfg.DATASET.TEST_SET, False,
         transforms.Compose([
@@ -138,6 +140,8 @@ def main():
             normalize,
         ])
     )
+    #dataset.coco()
+    print("================>>>",cfg.DATASET.ROOT, cfg.DATASET.DATASET, len(valid_dataset))
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset,

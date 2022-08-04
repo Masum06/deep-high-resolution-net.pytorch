@@ -13,15 +13,15 @@ PRINT_FREQ: 100
 DATASET:
   COLOR_RGB: true
   DATASET: 'coco'
-  DATA_FORMAT: jpg
+  DATA_FORMAT: png
   FLIP: true
   NUM_JOINTS_HALF_BODY: 8
   PROB_HALF_BODY: 0.3
-  ROOT: 'data/coco/'
+  ROOT: '/gdrive/MyDrive/Hi5/HI5/DATA/coco/'
   ROT_FACTOR: 45
   SCALE_FACTOR: 0.35
-  TEST_SET: 'val2017'
-  TRAIN_SET: 'train2017'
+  TEST_SET: 'valid'
+  TRAIN_SET: 'train'
 MODEL:
   INIT_WEIGHTS: true
   NAME: pose_hrnet
@@ -108,7 +108,7 @@ TRAIN:
   NESTEROV: false
 TEST:
   BATCH_SIZE_PER_GPU: 24
-  COCO_BBOX_FILE: 'data/coco/person_detection_results/COCO_val2017_detections_AP_H_56_person.json'
+  COCO_BBOX_FILE: ''
   BBOX_THRE: 1.0
   IMAGE_THRE: 0.0
   IN_VIS_THRE: 0.2
