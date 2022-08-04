@@ -14,7 +14,7 @@ DATASET:
   COLOR_RGB: true
   DATASET: 'coco'
   DATA_FORMAT: png
-  FLIP: true
+  FLIP: false
   NUM_JOINTS_HALF_BODY: 8
   PROB_HALF_BODY: 0.3
   ROOT: 'data/coco'
@@ -23,9 +23,9 @@ DATASET:
   TEST_SET: 'valid1k'
   TRAIN_SET: 'train10k'
 MODEL:
-  INIT_WEIGHTS: true
+  INIT_WEIGHTS: false
   NAME: pose_hrnet
-  NUM_JOINTS: 17
+  NUM_JOINTS: 21
   PRETRAINED: 'models/pytorch/imagenet/hrnet_w48-8ef0771d.pth'
   TARGET_TYPE: gaussian
   IMAGE_SIZE:
