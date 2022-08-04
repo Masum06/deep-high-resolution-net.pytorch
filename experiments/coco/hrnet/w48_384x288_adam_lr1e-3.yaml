@@ -17,11 +17,11 @@ DATASET:
   FLIP: true
   NUM_JOINTS_HALF_BODY: 8
   PROB_HALF_BODY: 0.3
-  ROOT: '/gdrive/MyDrive/Hi5/HI5/DATA/coco/'
+  ROOT: 'data/coco'
   ROT_FACTOR: 45
   SCALE_FACTOR: 0.35
-  TEST_SET: 'valid'
-  TRAIN_SET: 'train'
+  TEST_SET: 'valid1k'
+  TRAIN_SET: 'train10k'
 MODEL:
   INIT_WEIGHTS: true
   NAME: pose_hrnet
