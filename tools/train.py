@@ -134,7 +134,6 @@ def main():
             normalize,
         ])
     )
-    # print("================>>>",cfg.DATASET.TEST_SET, len(train_dataset))
 
     valid_dataset = eval('dataset.'+cfg.DATASET.DATASET)(
         cfg, cfg.DATASET.ROOT, cfg.DATASET.TEST_SET, False,
@@ -143,8 +142,7 @@ def main():
             normalize,
         ])
     )
-    #dataset.coco()
-    # print("================>>>",cfg.DATASET.ROOT, cfg.DATASET.DATASET, len(valid_dataset))
+    
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
@@ -193,6 +191,7 @@ def main():
         # Print time
         ct = datetime.datetime.now(tz=tz)
         print("Time: ", ct.isoformat())
+        logger.info("Time: ", ct.isoformat())
 
         # train for one epoch
         train(cfg, train_loader, model, criterion, optimizer, epoch,

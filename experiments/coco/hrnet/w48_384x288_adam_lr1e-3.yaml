@@ -5,7 +5,7 @@ CUDNN:
   ENABLED: true
 DATA_DIR: ''
 GPUS: (0,)
-OUTPUT_DIR: '/gdrive/MyDrive/Hi5/checkpoints/'
+OUTPUT_DIR: '/gdrive/MyDrive/Hi5/HI5/checkpoints/'
 LOG_DIR: 'log'
 WORKERS: 4
 PRINT_FREQ: 100
