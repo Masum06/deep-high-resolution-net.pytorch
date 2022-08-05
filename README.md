@@ -1,5 +1,6 @@
 # Deep High-Resolution Representation Learning for Human Pose Estimation (CVPR 2019)
 ### Colab Branch
+### Notebook https://colab.research.google.com/drive/18qvO8fx5AHxwOnS5yppCP4Zib5jd44p4#scrollTo=p4jW9Iz0xmuj
 ## News
 - [2021/04/12] Welcome to check out our recent work on bottom-up pose estimation (CVPR 2021) [HRNet-DEKR](https://github.com/HRNet/DEKR)!
 - [2020/07/05] [A very nice blog](https://towardsdatascience.com/overview-of-human-pose-estimation-neural-networks-hrnet-higherhrnet-architectures-and-faq-1954b2f8b249) from Towards Data Science introducing HRNet and HigherHRNet for human pose estimation.
