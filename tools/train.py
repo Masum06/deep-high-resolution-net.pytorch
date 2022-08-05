@@ -190,7 +190,6 @@ def main():
 
         # Print time
         ct = datetime.datetime.now(tz=tz)
-        print("Time: ", ct.isoformat())
         logger.info("Time: {}".format(ct.isoformat()))
 
         # train for one epoch
