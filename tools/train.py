@@ -37,6 +37,9 @@ from utils.utils import get_model_summary
 import dataset
 import models
 
+# TimeZone
+import datetime, pytz
+tz = pytz.timezone('US/Eastern')
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train keypoints network')
@@ -141,7 +144,7 @@ def main():
         ])
     )
     #dataset.coco()
-    print("================>>>",cfg.DATASET.ROOT, cfg.DATASET.DATASET, len(valid_dataset))
+    # print("================>>>",cfg.DATASET.ROOT, cfg.DATASET.DATASET, len(valid_dataset))
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
@@ -186,6 +189,10 @@ def main():
 
     for epoch in range(begin_epoch, cfg.TRAIN.END_EPOCH):
         lr_scheduler.step()
+
+        # Print time
+        ct = datetime.datetime.now(tz=tz)
+        print("Time: ", ct.isoformat())
 
         # train for one epoch
         train(cfg, train_loader, model, criterion, optimizer, epoch,
