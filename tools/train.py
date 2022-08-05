@@ -191,7 +191,7 @@ def main():
         # Print time
         ct = datetime.datetime.now(tz=tz)
         print("Time: ", ct.isoformat())
-        logger.info("Time: ", ct.isoformat())
+        logger.info("Time: {}".format(ct.isoformat()))
 
         # train for one epoch
         train(cfg, train_loader, model, criterion, optimizer, epoch,
