@@ -112,7 +112,7 @@ TEST:
   BBOX_THRE: 1.0
   IMAGE_THRE: 0.0
   IN_VIS_THRE: 0.2
-  MODEL_FILE: '/gdrive/MyDrive/Hi5/HI5/checkpoints/w48_384x288_adam_lr1e-3/model_best.pth'
+  MODEL_FILE: '/gdrive/MyDrive/Hi5/HI5/checkpoints/coco/pose_hrnet/w48_384x288_adam_lr1e-3/model_best.pth'
   NMS_THRE: 1.0
   OKS_THRE: 0.9
   USE_GT_BBOX: true
