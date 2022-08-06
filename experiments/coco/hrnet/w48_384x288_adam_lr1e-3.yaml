@@ -108,7 +108,7 @@ TRAIN:
   NESTEROV: false
 TEST:
   BATCH_SIZE_PER_GPU: 24
-  COCO_BBOX_FILE: ''
+  COCO_BBOX_FILE: '/gdrive/MyDrive/Hi5/HI5/DATA/coco/annotations/bbox_valid1k.json'
   BBOX_THRE: 1.0
   IMAGE_THRE: 0.0
   IN_VIS_THRE: 0.2
