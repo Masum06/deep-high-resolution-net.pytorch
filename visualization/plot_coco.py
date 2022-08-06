@@ -94,13 +94,13 @@ def parse_args():
     parser.add_argument('--image-path',
                         help='Path of COCO val images',
                         type=str,
-                        default='data/coco/images/val2017/'
+                        default='data/coco/images/valid1k/'
                         )
 
     parser.add_argument('--gt-anno',
                         help='Path of COCO val annotation',
                         type=str,
-                        default='data/coco/annotations/person_keypoints_val2017.json'
+                        default='data/coco/annotations/person_keypoints_valid.json'
                         )
 
     parser.add_argument('--save-path',
@@ -171,7 +171,7 @@ def plot(data, gt_file, img_path, save_path,
             img_name = str(imgId).zfill(12)
             
             # Read Images
-            img_file = img_path + img_name + '.jpg'
+            img_file = img_path + img_name + '.png'
             data_numpy = cv2.imread(img_file, cv2.IMREAD_COLOR | cv2.IMREAD_IGNORE_ORIENTATION)
             h = data_numpy.shape[0]
             w = data_numpy.shape[1]
@@ -217,7 +217,7 @@ def plot(data, gt_file, img_path, save_path,
                         ref = min(dt_w, dt_h)
                         num_box += 1
                         sum_score += dt['score']
-                        dt_joints = np.array(dt['keypoints']).reshape(17,-1)
+                        dt_joints = np.array(dt['keypoints']).reshape(21,-1)
                         joints_dict = map_joint_dict(dt_joints)
                         
                         # stick 
