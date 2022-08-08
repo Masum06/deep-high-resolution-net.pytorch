@@ -150,6 +150,7 @@ def plot(data, gt_file, img_path, save_path,
     coco_eval._prepare()
     gts_ = coco_eval._gts
     dts_ = coco_eval._dts
+    print("---------->>  dts_", dts_)
     
     p = coco_eval.params
     p.imgIds = list(np.unique(p.imgIds))
@@ -224,7 +225,7 @@ def plot(data, gt_file, img_path, save_path,
                         ref = min(dt_w, dt_h)
                         num_box += 1
                         sum_score += dt['score']
-                        dt_joints = np.array(dt['keypoints']).reshape(23,-1)
+                        dt_joints = np.array(dt['keypoints']).reshape(21,-1)
                         joints_dict = map_joint_dict(dt_joints)
                         
                         # stick 
