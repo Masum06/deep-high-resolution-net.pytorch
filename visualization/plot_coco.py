@@ -70,7 +70,6 @@ color2 = [(252,176,243),(252,176,243),(252,176,243),
         (255,255,0),(169, 209, 142), (169, 209, 142),
         (169, 209, 142), (255,255,0), (255,255,0),
         (169, 209, 142),(255,255,0), (255,255,0),
-        (169, 209, 142), (169, 209, 142), (255,255,0),
         (169, 209, 142), (169, 209, 142)
         ]
 
@@ -237,10 +236,10 @@ def plot(data, gt_file, img_path, save_path,
                                     or vg[link_pair[0]] == 0 \
                                     or vg[link_pair[1]] == 0:
                                     continue
-                            if k in range(6,11):
-                                lw = 1
-                            else:
-                                lw = ref / 100.
+                            # if k in range(6,11):
+                            #     lw = 1
+                            # else:
+                            lw = ref / 100.
                             line = mlines.Line2D(
                                     np.array([joints_dict[link_pair[0]][0],
                                               joints_dict[link_pair[1]][0]]),
@@ -257,10 +256,10 @@ def plot(data, gt_file, img_path, save_path,
                                 continue
                             if dt_joints[k,0] > w or dt_joints[k,1] > h:
                                 continue
-                            if k in range(5):
-                                radius = 1
-                            else:
-                                radius = ref / 100
+                            # if k in range(5):
+                            #     radius = 1
+                            # else:
+                            radius = ref / 100
                     
                             circle = mpatches.Circle(tuple(dt_joints[k,:2]), 
                                                      radius=radius, 
