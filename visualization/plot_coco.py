@@ -224,7 +224,7 @@ def plot(data, gt_file, img_path, save_path,
                         ref = min(dt_w, dt_h)
                         num_box += 1
                         sum_score += dt['score']
-                        dt_joints = np.array(dt['keypoints']).reshape(21,-1)
+                        dt_joints = np.array(dt['keypoints']).reshape(23,-1)
                         joints_dict = map_joint_dict(dt_joints)
                         
                         # stick 
