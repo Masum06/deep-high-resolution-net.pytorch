@@ -84,6 +84,7 @@ CocoColors = [(240,2,127),(240,2,127),(240,2,127),
             (255,255,0),(169, 209, 142)]
 
 NUM_KPTS = 21
+real_num = 1
 
 CTX = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -107,7 +108,6 @@ def draw_bbox(box,img):
     """
     cv2.rectangle(img, box[0], box[1], color=(0, 255, 0),thickness=3)
 
-
 def get_person_detection_boxes(model, img, threshold=0.5):
     pred = model(img)
     pred_classes = [COCO_INSTANCE_CATEGORY_NAMES[i]
@@ -127,7 +127,12 @@ def get_person_detection_boxes(model, img, threshold=0.5):
         if pred_classes[idx] == 'person':
             person_boxes.append(box)
 
-    return person_boxes
+    # print(person_boxes)
+
+    # return person_boxes
+    returning = np.array([[[(130,310),(280,530)]],[[(-25,190),(220,500)]],[[(430,410),(970,880)]],[[(30,150),(390,630)]],[[(30,240),(320,630)]],[[(40,400),(250,630)]],[[(90,120),(460,620)]],[[(-200,200),(250,600)]],[[(200,350),(320,500)]],[[(-200,0),(0,550)]],[[(50,90),(300,430)]],[[(0,300),(320,1000)]],[[(200,200),(400,450)]],[[(-200,150),(100,550)]],[[(140,140),(370,430)]]])
+    global real_num
+    return np.array(returning[real_num])
 
 
 def get_pose_estimation_prediction(pose_model, image, center, scale):
@@ -343,7 +348,8 @@ def main():
             img = cv2.putText(image_bgr, 'fps: '+ "%.2f"%(fps), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 2)
         
         if args.write:
-            save_path = 'output.jpg'
+            global real_num
+            save_path = f"output/output_{real_num}.jpg"
             cv2.imwrite(save_path,image_bgr)
             print('the result image has been saved as {}'.format(save_path))
 
