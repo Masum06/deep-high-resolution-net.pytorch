@@ -84,7 +84,7 @@ CocoColors = [(240,2,127),(240,2,127),(240,2,127),
             (255,255,0),(169, 209, 142)]
 
 NUM_KPTS = 21
-real_num = 1
+real_num = 2
 
 CTX = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -130,9 +130,10 @@ def get_person_detection_boxes(model, img, threshold=0.5):
     # print(person_boxes)
 
     # return person_boxes
-    returning = np.array([[[(130,310),(280,530)]],[[(-25,190),(220,500)]],[[(430,410),(970,880)]],[[(30,150),(390,630)]],[[(30,240),(320,630)]],[[(40,400),(250,630)]],[[(90,120),(460,620)]],[[(-200,200),(250,600)]],[[(200,350),(320,500)]],[[(-200,0),(0,550)]],[[(50,90),(300,430)]],[[(0,300),(320,1000)]],[[(200,200),(400,450)]],[[(-200,150),(100,550)]],[[(140,140),(370,430)]]])
+    # returning = np.array([[[(130,310),(280,530)]],[[(-25,190),(220,500)]],[[(430,410),(970,880)]],[[(30,150),(390,630)]],[[(30,240),(320,630)]],[[(40,400),(250,630)]],[[(90,120),(460,620)]],[[(-200,200),(250,600)]],[[(200,350),(320,500)]],[[(-200,0),(0,550)]],[[(50,90),(300,430)]],[[(0,300),(320,1000)]],[[(200,200),(400,450)]],[[(-200,150),(100,550)]],[[(140,140),(370,430)]]])
+    lab_coords = np.array([[[(276,68),(567,393)]],[[(298,63),(639,402)]],[[(548,47),(786,375)]]])
     global real_num
-    return np.array(returning[real_num])
+    return lab_coords[real_num]
 
 
 def get_pose_estimation_prediction(pose_model, image, center, scale):
@@ -349,7 +350,7 @@ def main():
         
         if args.write:
             global real_num
-            save_path = f"output/output_{real_num}.jpg"
+            save_path = f"output/lab_{real_num}.jpg"
             cv2.imwrite(save_path,image_bgr)
             print('the result image has been saved as {}'.format(save_path))
 
