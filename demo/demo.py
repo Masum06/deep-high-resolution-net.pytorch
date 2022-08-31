@@ -28,6 +28,8 @@ from config import update_config
 from core.function import get_final_preds
 from utils.transforms import get_affine_transform
 
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+
 COCO_KEYPOINT_INDEXES = {
     0: 'nose',
     1: 'left_eye',
@@ -87,6 +89,16 @@ NUM_KPTS = 21
 # real_num = 2
 
 CTX = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
+def get_model_instance_segmentation(num_classes):
+    # load an instance segmentation model pre-trained pre-trained on COCO
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False)
+    # get number of input features for the classifier
+    in_features = model.roi_heads.box_predictor.cls_score.in_features
+    # replace the pre-trained head with a new one
+    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+
+    return model
 
 def draw_pose(keypoints,img):
     """draw the keypoints and the skeletons.
@@ -244,7 +256,8 @@ def main():
     args = parse_args()
     update_config(cfg, args)
 
-    box_model = load_state_dict(torch.load('demo/tuned_hand.pth'), strict=False) torch.load()
+    box_model = tget_model_instance_segmentation(2)
+    box_model.load_state_dict(torch.load('demo/tuned_hand.pth'), strict=False)
     box_model.to(CTX)
     box_model.eval()
 
