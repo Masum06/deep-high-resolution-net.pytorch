@@ -244,8 +244,8 @@ def main():
     args = parse_args()
     update_config(cfg, args)
 
-    box_model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
-    box_model.to(CTX)
+    box_model = torch.load('demo/tuned_hand.pth')
+    # box_model.to(CTX)
     box_model.eval()
 
     pose_model = eval('models.'+cfg.MODEL.NAME+'.get_pose_net')(
