@@ -127,14 +127,14 @@ def get_person_detection_boxes(model, img, threshold=0.5):
         if pred_classes[idx] == 'person':
             person_boxes.append(box)
 
-    # print(person_boxes)
+    print(person_boxes)
 
-    # return person_boxes
-    returning = np.array([[[(130,310),(280,530)]],[[(-25,190),(220,500)]],[[(430,410),(970,880)]],[[(30,150),(390,630)]],[[(30,240),(320,630)]],[[(40,400),(250,630)]],[[(90,120),(460,620)]],[[(-200,200),(250,600)]],[[(200,350),(320,500)]],[[(-200,0),(0,550)]],[[(50,90),(300,430)]],[[(0,300),(320,1000)]],[[(200,200),(400,450)]],[[(-200,150),(100,550)]],[[(140,140),(370,430)]]])
+    return person_boxes
+#     returning = np.array([[[(130,310),(280,530)]],[[(-25,190),(220,500)]],[[(430,410),(970,880)]],[[(30,150),(390,630)]],[[(30,240),(320,630)]],[[(40,400),(250,630)]],[[(90,120),(460,620)]],[[(-200,200),(250,600)]],[[(200,350),(320,500)]],[[(-200,0),(0,550)]],[[(50,90),(300,430)]],[[(0,300),(320,1000)]],[[(200,200),(400,450)]],[[(-200,150),(100,550)]],[[(140,140),(370,430)]]])
     # lab_coords = np.array([[[(276,68),(567,393)]],[[(298,63),(639,402)]],[[(548,47),(786,375)]]])
     # global real_num
-    # return returning[0]
-    return np.array([[(940,415),(1208,707)]])
+#     return returning[0]
+#     return np.array([[(940,415),(1208,707)]])
 
 
 def get_pose_estimation_prediction(pose_model, image, center, scale):
@@ -244,8 +244,8 @@ def main():
     args = parse_args()
     update_config(cfg, args)
 
-    box_model = torch.load('demo/tuned_hand.pth')
-    # box_model.to(CTX)
+    box_model = load_state_dict(torch.load('demo/tuned_hand.pth'), strict=False) torch.load()
+    box_model.to(CTX)
     box_model.eval()
 
     pose_model = eval('models.'+cfg.MODEL.NAME+'.get_pose_net')(
