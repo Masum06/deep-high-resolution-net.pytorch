@@ -63,28 +63,15 @@ COCO_INSTANCE_CATEGORY_NAMES = [
     'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush'
 ]
 
-SKELETON = [[0, 1], [0, 5], [0, 9], 
-            [0, 13], [0, 17], [1, 5], 
-            [5, 9], [9, 13], [1, 2], 
-            [2, 3], [3, 4], [5, 6], 
-            [6, 7], [7, 8], [9, 10], 
-            [10, 11], [11, 12], [13, 14], 
-            [14, 15], [15, 16], [17, 18], 
-            [18, 19], [19, 20]]
+SKELETON = [
+    [1,3],[1,0],[2,4],[2,0],[0,5],[0,6],[5,7],[7,9],[6,8],[8,10],[5,11],[6,12],[11,12],[11,13],[13,15],[12,14],[14,16]
+]
 
-CocoColors = [(240,2,127),(240,2,127),(240,2,127), 
-            (240,2,127), (240,2,127), 
-            (255,255,51),(255,255,51),
-            (254,153,41),(44,127,184),
-            (217,95,14),(0,0,255),
-            (255,255,51),(255,255,51),(228,26,28),
-            (49,163,84),(252,176,243),(0,176,240),
-            (255,255,0),(169, 209, 142),
-            (255,255,0),(169, 209, 142),
-            (255,255,0),(169, 209, 142)]
+CocoColors = [[255, 0, 0], [255, 85, 0], [255, 170, 0], [255, 255, 0], [170, 255, 0], [85, 255, 0], [0, 255, 0],
+              [0, 255, 85], [0, 255, 170], [0, 255, 255], [0, 170, 255], [0, 85, 255], [0, 0, 255], [85, 0, 255],
+              [170, 0, 255], [255, 0, 255], [255, 0, 170], [255, 0, 85]]
 
-NUM_KPTS = 21
-# real_num = 2
+NUM_KPTS = 17
 
 CTX = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -108,6 +95,7 @@ def draw_bbox(box,img):
     """
     cv2.rectangle(img, box[0], box[1], color=(0, 255, 0),thickness=3)
 
+
 def get_person_detection_boxes(model, img, threshold=0.5):
     pred = model(img)
     pred_classes = [COCO_INSTANCE_CATEGORY_NAMES[i]
@@ -127,14 +115,7 @@ def get_person_detection_boxes(model, img, threshold=0.5):
         if pred_classes[idx] == 'person':
             person_boxes.append(box)
 
-    # print(person_boxes)
-
-    # return person_boxes
-    returning = np.array([[[(130,310),(280,530)]],[[(-25,190),(220,500)]],[[(430,410),(970,880)]],[[(30,150),(390,630)]],[[(30,240),(320,630)]],[[(40,400),(250,630)]],[[(90,120),(460,620)]],[[(-200,200),(250,600)]],[[(200,350),(320,500)]],[[(-200,0),(0,550)]],[[(50,90),(300,430)]],[[(0,300),(320,1000)]],[[(200,200),(400,450)]],[[(-200,150),(100,550)]],[[(140,140),(370,430)]]])
-    # lab_coords = np.array([[[(276,68),(567,393)]],[[(298,63),(639,402)]],[[(548,47),(786,375)]]])
-    # global real_num
-    # return returning[0]
-    return np.array([[(940,415),(1208,707)]])
+    return person_boxes
 
 
 def get_pose_estimation_prediction(pose_model, image, center, scale):
@@ -244,8 +225,8 @@ def main():
     args = parse_args()
     update_config(cfg, args)
 
-    box_model = torch.load('demo/tuned_hand.pth')
-    # box_model.to(CTX)
+    box_model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    box_model.to(CTX)
     box_model.eval()
 
     pose_model = eval('models.'+cfg.MODEL.NAME+'.get_pose_net')(
@@ -275,17 +256,11 @@ def main():
 
     if args.webcam or args.video:
         if args.write:
-            save_path = '/gdrive/MyDrive/Hi5/HI5/output.avi'
-            height = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-            width = int(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH))
-
-            fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-            out = cv2.VideoWriter(save_path, fourcc, 30, (width, height), isColor=True)
-        counter = 0
+            save_path = 'output.avi'
+            fourcc = cv2.VideoWriter_fourcc(*'XVID')
+            out = cv2.VideoWriter(save_path,fourcc, 24.0, (int(vidcap.get(3)),int(vidcap.get(4))))
         while True:
             ret, image_bgr = vidcap.read()
-            # frame_count = int(vidcap.get(cv2. CAP_PROP_FRAME_COUNT))
-            # print(frame_count)
             if ret:
                 last_time = time.time()
                 image = image_bgr[:, :, [2, 1, 0]]
@@ -313,14 +288,11 @@ def main():
                     img = cv2.putText(image_bgr, 'fps: '+ "%.2f"%(fps), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 2)
 
                 if args.write:
-                    if counter % 10 == 0:
-                      print(f"Writing frame {counter}")
-                    counter += 1
                     out.write(image_bgr)
 
-                # cv2.imshow('demo',image_bgr)
-                # if cv2.waitKey(1) & 0XFF==ord('q'):
-                #     break
+                cv2.imshow('demo',image_bgr)
+                if cv2.waitKey(1) & 0XFF==ord('q'):
+                    break
             else:
                 print('cannot load the video.')
                 break
@@ -359,8 +331,7 @@ def main():
             img = cv2.putText(image_bgr, 'fps: '+ "%.2f"%(fps), (25, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 2)
         
         if args.write:
-            # global real_num
-            save_path = f"output.jpg"
+            save_path = 'output.jpg'
             cv2.imwrite(save_path,image_bgr)
             print('the result image has been saved as {}'.format(save_path))
 
