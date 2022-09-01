@@ -256,7 +256,7 @@ def main():
     args = parse_args()
     update_config(cfg, args)
 
-    box_model = tget_model_instance_segmentation(2)
+    box_model = get_model_instance_segmentation(2)
     box_model.load_state_dict(torch.load('demo/tuned_hand.pth'), strict=False)
     box_model.to(CTX)
     box_model.eval()
