@@ -118,9 +118,9 @@ def draw_bbox(box,img):
     """draw the detected bounding box on the image.
     :param img:
     """
-    cv2.rectangle(img, box[0], box[1], color=(0, 255, 0),thickness=3)
+    cv2.rectangle(img, round(box[0]), round(box[1]), color=(0, 255, 0),thickness=3)
 
-def get_person_detection_boxes(model, img, threshold=0.5):
+def get_person_detection_boxes(model, img, the_image, threshold=0.5):
     pred = model(img)
     pred_classes = [COCO_INSTANCE_CATEGORY_NAMES[i]
                     for i in list(pred[0]['labels'].cpu().numpy())]  # Get the Prediction Score
@@ -140,6 +140,9 @@ def get_person_detection_boxes(model, img, threshold=0.5):
             person_boxes.append(box)
 
     print(person_boxes)
+
+    for b in person_boxes:
+        draw_bbox(b,the_image)
 
     return person_boxes
 #     returning = np.array([[[(130,310),(280,530)]],[[(-25,190),(220,500)]],[[(430,410),(970,880)]],[[(30,150),(390,630)]],[[(30,240),(320,630)]],[[(40,400),(250,630)]],[[(90,120),(460,620)]],[[(-200,200),(250,600)]],[[(200,350),(320,500)]],[[(-200,0),(0,550)]],[[(50,90),(300,430)]],[[(0,300),(320,1000)]],[[(200,200),(400,450)]],[[(-200,150),(100,550)]],[[(140,140),(370,430)]]])
@@ -257,7 +260,7 @@ def main():
     update_config(cfg, args)
 
     box_model = get_model_instance_segmentation(2)
-    box_model.load_state_dict(torch.load('demo/tuned_hand.pth'), strict=False)
+    box_model.load_state_dict(torch.load('demo/tuned_hand_blur.pth'), strict=False)
     box_model.to(CTX)
     box_model.eval()
 
@@ -309,7 +312,7 @@ def main():
                 input.append(img_tensor)
 
                 # object detection box
-                pred_boxes = get_person_detection_boxes(box_model, input, threshold=0.9)
+                pred_boxes = get_person_detection_boxes(box_model, input, image_bgr, threshold=0.9)
 
                 # pose estimation
                 if len(pred_boxes) >= 1:
@@ -355,7 +358,7 @@ def main():
         input.append(img_tensor)
 
         # object detection box
-        pred_boxes = get_person_detection_boxes(box_model, input, threshold=0.9)
+        pred_boxes = get_person_detection_boxes(box_model, input, image_bgr, threshold=0.9)
 
         # pose estimation
         if len(pred_boxes) >= 1:
