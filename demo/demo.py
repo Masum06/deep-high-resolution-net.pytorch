@@ -20,6 +20,7 @@ import cv2
 import numpy as np
 import time
 
+import math
 
 import _init_paths
 import models
@@ -118,7 +119,7 @@ def draw_bbox(box,img):
     """draw the detected bounding box on the image.
     :param img:
     """
-    cv2.rectangle(img, round(box[0]), round(box[1]), color=(0, 255, 0),thickness=3)
+    cv2.rectangle(img, (box[0][0],box[0][1]), (box[1][0], box[1][1]), color=(0, 255, 0),thickness=3)
 
 def get_person_detection_boxes(model, img, the_image, threshold=0.5):
     pred = model(img)
@@ -139,7 +140,7 @@ def get_person_detection_boxes(model, img, the_image, threshold=0.5):
         if pred_classes[idx] == 'person':
             person_boxes.append(box)
 
-    print(person_boxes)
+    person_boxes = np.round(person_boxes).astype(int)
 
     for b in person_boxes:
         draw_bbox(b,the_image)
