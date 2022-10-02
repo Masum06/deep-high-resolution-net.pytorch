@@ -91,79 +91,6 @@ NUM_KPTS = 21
 
 CTX = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-# FROM HAND DETECTION ============================================
-try:
-    xrange          # Python 2
-except NameError:
-    xrange = range  # Python 3
-  
-# initilize the tensor holder here.
-im_data = torch.FloatTensor(1)
-im_info = torch.FloatTensor(1)
-num_boxes = torch.LongTensor(1)
-gt_boxes = torch.FloatTensor(1)
-box_info = torch.FloatTensor(1)
-
-im_data = im_data.cuda()
-im_info = im_info.cuda()
-num_boxes = num_boxes.cuda()
-gt_boxes = gt_boxes.cuda()
-
-def im_list_to_blob(ims):
-  """Convert a list of images into a network input.
-
-  Assumes images are already prepared (means subtracted, BGR order, ...).
-  """
-  max_shape = np.array([im.shape for im in ims]).max(axis=0)
-  num_images = len(ims)
-  blob = np.zeros((num_images, max_shape[0], max_shape[1], 3),
-                  dtype=np.float32)
-  for i in xrange(num_images):
-      im = ims[i]
-      blob[i, 0:im.shape[0], 0:im.shape[1], :] = im
-
-  return blob
-
-def _get_image_blob(im):
-  """Converts an image into a network input.
-  Arguments:
-    im (ndarray): a color image in BGR order
-  Returns:
-    blob (ndarray): a data blob holding an image pyramid
-    im_scale_factors (list): list of image scales (relative to im) used
-      in the image pyramid
-  """
-  im_orig = im.astype(np.float32, copy=True)
-  PIXEL_MEANS = np.array([[[102.9801, 115.9465, 122.7717]]])
-  im_orig -= PIXEL_MEANS
-
-  im_shape = im_orig.shape
-  im_size_min = np.min(im_shape[0:2])
-  im_size_max = np.max(im_shape[0:2])
-
-  processed_ims = []
-  im_scale_factors = []
-
-  TEST_SCALES = (600,)
-  TEST_MAX_SIZE = 1000
-
-  for target_size in TEST_SCALES:
-    im_scale = float(target_size) / float(im_size_min)
-    # Prevent the biggest axis from being more than MAX_SIZE
-    if np.round(im_scale * im_size_max) > TEST_MAX_SIZE:
-      im_scale = float(TEST_MAX_SIZE) / float(im_size_max)
-    im = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
-            interpolation=cv2.INTER_LINEAR)
-    im_scale_factors.append(im_scale)
-    processed_ims.append(im)
-
-  # Create a blob to hold the input images
-  blob = im_list_to_blob(processed_ims)
-
-  return blob, np.array(im_scale_factors)
-
-  # ================================================================
-
 def get_model_instance_segmentation(num_classes):
     # load an instance segmentation model pre-trained pre-trained on COCO
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False)
@@ -337,7 +264,7 @@ def main():
     update_config(cfg, args)
 
     box_model = get_model_instance_segmentation(2)
-    box_model.load_state_dict(torch.load('demo/faster_rcnn_1_8_132028.pth'), strict=False)
+    box_model.load_state_dict(torch.load('demo/tuned_hand_blur.pth'), strict=False)
     box_model.to(CTX)
     box_model.eval()
 
@@ -383,40 +310,13 @@ def main():
                 last_time = time.time()
                 image = image_bgr[:, :, [2, 1, 0]]
 
-                im = image_bgr
+                input = []
+                img = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+                img_tensor = torch.from_numpy(img/255.).permute(2,0,1).float().to(CTX)
+                input.append(img_tensor)
 
-                blobs, im_scales = _get_image_blob(im)
-                assert len(im_scales) == 1, "Only single-image batch implemented"
-                im_blob = blobs
-                im_info_np = np.array([[im_blob.shape[1], im_blob.shape[2], im_scales[0]]], dtype=np.float32)
-
-                im_data_pt = torch.from_numpy(im_blob)
-                im_data_pt = im_data_pt.permute(0, 3, 1, 2)
-                im_info_pt = torch.from_numpy(im_info_np)
-
-                with torch.no_grad():
-                        im_data.resize_(im_data_pt.size()).copy_(im_data_pt)
-                        im_info.resize_(im_info_pt.size()).copy_(im_info_pt)
-                        gt_boxes.resize_(1, 1, 5).zero_()
-                        num_boxes.resize_(1).zero_()
-                        box_info.resize_(1, 1, 5).zero_() 
-
-                # input = []
-                # img = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-                # img_tensor = torch.from_numpy(img/255.).permute(2,0,1).float().to(CTX)
-                # input.append(img_tensor)
-
-                # # object detection box
-                # pred_boxes = get_person_detection_boxes(box_model, input, image_bgr, threshold=0.9)
-
-                rois, cls_prob, bbox_pred, \
-                rpn_loss_cls, rpn_loss_box, \
-                RCNN_loss_cls, RCNN_loss_bbox, \
-                rois_label, loss_list = box_model(im_data, im_info, gt_boxes, num_boxes, box_info)
-
-                pred_boxes = rois.data[:, :, 1:5][0]
-
-                print(pred_boxes)
+                # object detection box
+                pred_boxes = get_person_detection_boxes(box_model, input, image_bgr, threshold=0.9)
 
                 # pose estimation
                 if len(pred_boxes) >= 1:
@@ -456,48 +356,13 @@ def main():
         last_time = time.time()
         image = image_bgr[:, :, [2, 1, 0]]
 
-        im = image_bgr
+        input = []
+        img = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+        img_tensor = torch.from_numpy(img/255.).permute(2,0,1).float().to(CTX)
+        input.append(img_tensor)
 
-        blobs, im_scales = _get_image_blob(im)
-        assert len(im_scales) == 1, "Only single-image batch implemented"
-        im_blob = blobs
-        im_info_np = np.array([[im_blob.shape[1], im_blob.shape[2], im_scales[0]]], dtype=np.float32)
-
-        im_data_pt = torch.from_numpy(im_blob)
-        im_data_pt = im_data_pt.permute(0, 3, 1, 2)
-        im_info_pt = torch.from_numpy(im_info_np)
-
-        with torch.no_grad():
-                im_data.resize_(im_data_pt.size()).copy_(im_data_pt)
-                im_info.resize_(im_info_pt.size()).copy_(im_info_pt)
-                gt_boxes.resize_(1, 1, 5).zero_()
-                num_boxes.resize_(1).zero_()
-                box_info.resize_(1, 1, 5).zero_() 
-
-        # input = []
-        # img = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-        # img_tensor = torch.from_numpy(img/255.).permute(2,0,1).float().to(CTX)
-        # input.append(img_tensor)
-
-        # # object detection box
-        # pred_boxes = get_person_detection_boxes(box_model, input, image_bgr, threshold=0.9)
-
-
-        # Create a text file and write the values of the following variables into it
-        # im_data, im_info, gt_boxes, num_boxes, box_info
-        f = open("im_data.txt", "w")
-        f.write("im_data = " + str(im_data) + "\nim_info = " + str(im_info) + "\ngt_boxes = " + str(gt_boxes) + "\nnum_boxes = " + str(num_boxes) + "\nbox_info = " + str(box_info) + "\n")
-        f.close()
-
-
-        rois, cls_prob, bbox_pred, \
-        rpn_loss_cls, rpn_loss_box, \
-        RCNN_loss_cls, RCNN_loss_bbox, \
-        rois_label, loss_list = box_model(im_data, im_info, gt_boxes, num_boxes, box_info)
-
-        pred_boxes = rois.data[:, :, 1:5][0]
-
-        print(pred_boxes)
+        # object detection box
+        pred_boxes = get_person_detection_boxes(box_model, input, image_bgr, threshold=0.94)
 
         # pose estimation
         if len(pred_boxes) >= 1:
