@@ -29,29 +29,37 @@ logger = logging.getLogger(__name__)
 class COCODataset(JointsDataset):
     '''
     "keypoints": {
-        0: "nose",
-        1: "left_eye",
-        2: "right_eye",
-        3: "left_ear",
-        4: "right_ear",
-        5: "left_shoulder",
-        6: "right_shoulder",
-        7: "left_elbow",
-        8: "right_elbow",
-        9: "left_wrist",
-        10: "right_wrist",
-        11: "left_hip",
-        12: "right_hip",
-        13: "left_knee",
-        14: "right_knee",
-        15: "left_ankle",
-        16: "right_ankle"
+        0: "0",
+        1: "1",
+        2: "2",
+        3: "3",
+        4: "4",
+        5: "5",
+        6: "6",
+        7: "7",
+        8: "8",
+        9: "9",
+        10: "10",
+        11: "11",
+        12: "12",
+        13: "13",
+        14: "14",
+        15: "15",
+        16: "16",
+        17: "17",
+        18: "18",
+        19: "19",
+        20: "20"
     },
-	"skeleton": [
+	"skeleton": [ [0,1],
         [1, 2], [1, 6], [1, 10], [1, 14], [1, 18], [2, 6], [6, 10], [10, 14], 
         [2, 3], [3, 4], [4, 5], [6, 7], [7, 8], [8, 9], [10, 11], [11, 12], 
-        [12, 13], [14, 15], [15, 16], [16, 17], [18, 19], [19, 20], [20, 21]]
+        [12, 13], [14, 15], [15, 16], [16, 17], [18, 19], [19, 20]]
     '''
+        # [[1, 2], [1, 6], [1, 10], [1, 14], [1, 18], [2, 6], [6, 10], [10, 14], 
+        # [2, 3], [3, 4], [4, 5], [6, 7], [7, 8], [8, 9], [10, 11], [11, 12], 
+        # [12, 13], [14, 15], [15, 16], [16, 17], [18, 19], [19, 20], [20, 21]]
+
     def __init__(self, cfg, root, image_set, is_train, transform=None):
         super().__init__(cfg, root, image_set, is_train, transform)
         self.nms_thre = cfg.TEST.NMS_THRE
@@ -96,9 +104,8 @@ class COCODataset(JointsDataset):
 
         self.joints_weight = np.array(
             [
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2,
-                1.5, 1.5, 1., 1., 1.2, 1.2, 1.5, 1.5,
-                1., 1., 1., 1.
+                1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
+                1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.
             ],
             dtype=np.float32
         ).reshape((self.num_joints, 1))
@@ -111,7 +118,7 @@ class COCODataset(JointsDataset):
         logger.info('=> load {} samples'.format(len(self.db)))
 
     def _get_ann_file_keypoint(self):
-        """ self.root / annotations / person_keypoints_train2017.json """
+        """ self.root / annotations / person_keypoints_train.json """
         prefix = 'person_keypoints' \
             if 'test' not in self.image_set else 'image_info'
         return os.path.join(
@@ -231,11 +238,9 @@ class COCODataset(JointsDataset):
 
     def image_path_from_index(self, index):
         """ example: images / train2017 / 000000119993.jpg """
-        file_name = '%012d.jpg' % index
-        if '2014' in self.image_set:
-            file_name = 'COCO_%s_' % self.image_set + file_name
+        file_name = '%012d.png' % index
 
-        prefix = 'test2017' if 'test' in self.image_set else self.image_set
+        prefix = 'test' if 'test' in self.image_set else self.image_set
 
         data_name = prefix + '.zip@' if self.data_format == 'zip' else prefix
 
@@ -312,7 +317,7 @@ class COCODataset(JointsDataset):
                 'scale': all_boxes[idx][2:4],
                 'area': all_boxes[idx][4],
                 'score': all_boxes[idx][5],
-                'image': int(img_path[idx][-16:-4])
+                'image': int(img_path[idx][-16:-4]) # May need to change later
             })
         # image x person x (keypoints)
         kpts = defaultdict(list)
